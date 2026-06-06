@@ -1,0 +1,59 @@
+{
+  "resources": [
+    {
+      "category": "book",
+      "title": "Eloquent JavaScript",
+      "description": "This is my go-to book for mastering JavaScript fundamentals, browser APIs, and practical coding patterns.",
+      "url": "https://eloquentjavascript.net/",
+      "buttonText": "Read online",
+      "openInNewTab": true
+    },
+    {
+      "category": "book",
+      "title": "Clean Code",
+      "description": "A strong reminder to write readable, maintainable code and think like a professional developer.",
+      "url": "https://www.oreilly.com/library/view/clean-code-a/9780136083238/",
+      "buttonText": "View details",
+      "openInNewTab": true
+    },
+    {
+      "category": "book",
+      "title": "Grokking Algorithms",
+      "description": "A visual, beginner-friendly approach to algorithms and problem solving that helps me build better logic.",
+      "url": "https://www.manning.com/books/grokking-algorithms",
+      "buttonText": "View book",
+      "openInNewTab": true
+    },
+    {
+      "category": "video",
+      "title": "JavaScript Tutorial for Beginners",
+      "description": "A complete introduction to JavaScript fundamentals and browser scripting.",
+      "url": "https://www.youtube.com/watch?v=W6NZfCO5SIk",
+      "buttonText": "Watch on YouTube",
+      "openInNewTab": true
+    },
+    {
+      "category": "video",
+      "title": "Responsive Web Design Tutorial",
+      "description": "Step-by-step guide to building mobile-friendly web interfaces with CSS layout techniques.",
+      "url": "https://www.youtube.com/watch?v=srvUrASNj0s",
+      "buttonText": "Watch on YouTube",
+      "openInNewTab": true
+    },
+    {
+      "category": "note",
+      "title": "Download guide",
+      "description": "A short PDF guide covering my core study areas, learning tips, and project notes for web development and AI.",
+      "url": "assets/resources-guide.pdf",
+      "buttonText": "Download PDF",
+      "openInNewTab": false,
+      "download": true
+    },
+    {
+      "category": "note",
+      "title": "Study roadmap",
+      "description": "Keep track of the skills I’m sharpening right now: JavaScript, React, Python, and cybersecurity fundamentals.",
+      "buttonText": null
+    }
+  ]
+}

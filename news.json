@@ -1,0 +1,25 @@
+{
+  "news": [
+    {
+      "category": "AI",
+      "title": "AI tools continue growing across web development",
+      "summary": "New AI-assisted code tools are helping developers build interfaces faster while learning modern workflows.",
+      "url": "https://www.example.com/ai-web-development",
+      "buttonText": "Read more"
+    },
+    {
+      "category": "Career",
+      "title": "Remote work demand remains strong for entry-level tech roles",
+      "summary": "Companies continue to hire for remote internships and junior roles, especially in web and software engineering.",
+      "url": "https://www.example.com/remote-tech-jobs",
+      "buttonText": "Read more"
+    },
+    {
+      "category": "Opportunities",
+      "title": "Open internship listings for web development learners",
+      "summary": "Check current internship opportunities and scholarship programs in tech education.",
+      "url": "https://www.example.com/web-internships",
+      "buttonText": "Read more"
+    }
+  ]
+}

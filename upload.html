@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Upload assets - Personal Website</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script defer src="js/supabase-config.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <section class="content-block">
+        <h1>Upload assets</h1>
+        <p>Use this page to upload images, videos, or PDFs to your Supabase Storage bucket. Make sure you have created `js/supabase-config.js` with your project `url` and `key`.</p>
+
+        <div class="card">
+          <label for="bucket">Bucket name</label>
+          <input id="bucket" value="public-assets" />
+          <label for="path">Target path (e.g. about/childhood.jpg)</label>
+          <input id="path" placeholder="about/childhood.jpg" />
+          <label for="file">Choose file</label>
+          <input id="file" type="file" />
+          <div style="margin-top:1rem;">
+            <button id="uploadBtn" class="btn btn-primary">Upload</button>
+          </div>
+          <p id="status" class="small-copy" style="margin-top:1rem;">Status: idle</p>
+          <p id="publicUrl" class="small-copy"></p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const statusEl = document.getElementById('status');
+      const publicUrlEl = document.getElementById('publicUrl');
+      const uploadBtn = document.getElementById('uploadBtn');
+
+      const config = window.SUPABASE_CONFIG || {};
+      const SUPABASE_URL = config.url || '';
+      const SUPABASE_KEY = config.key || '';
+
+      const toBaseUrl = (bucket, path) => `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/${bucket}/${encodeURIComponent(path)}`;
+
+      uploadBtn.addEventListener('click', async () => {
+        const bucket = document.getElementById('bucket').value.trim();
+        const path = document.getElementById('path').value.trim();
+        const fileInput = document.getElementById('file');
+        if (!SUPABASE_URL || !SUPABASE_KEY) {
+          statusEl.textContent = 'Status: Missing js/supabase-config.js or values inside it.';
+          return;
+        }
+        if (!bucket || !path || !fileInput.files.length) {
+          statusEl.textContent = 'Status: Provide bucket, path and a file.';
+          return;
+        }
+        const file = fileInput.files[0];
+        statusEl.textContent = 'Status: Uploading...';
+
+        try {
+          const endpoint = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/${bucket}/${encodeURIComponent(path)}`;
+          const res = await fetch(endpoint, {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${SUPABASE_KEY}`,
+              'Content-Type': file.type || 'application/octet-stream'
+            },
+            body: file
+          });
+          if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+
+          const publicUrl = toBaseUrl(bucket, path);
+          statusEl.textContent = 'Status: Upload successful';
+          publicUrlEl.innerHTML = `Public URL: <a href="${publicUrl}" target="_blank" rel="noreferrer">${publicUrl}</a>`;
+        } catch (err) {
+          statusEl.textContent = 'Status: Upload failed - ' + err.message;
+          publicUrlEl.textContent = '';
+          console.error(err);
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Learning resources from Kaleb Mekonen Legese — books, videos, study notes, and curated materials for web and AI learning." />
+    <meta name="theme-color" content="#2563eb" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <title>Resources | Learning Hub</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script defer src="js/supabase-config.js"></script>
+    <script defer src="js/script.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="index.html" class="brand">Kaleb Mekonen Legese</a>
+        <nav class="site-nav">
+          <a href="index.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="projects.html">Projects</a>
+          <a href="resources.html">Resources</a>
+          <a href="opportunities.html">Opportunities</a>
+          <a href="news.html">News</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+        <div class="newsletter-badge">
+          <a href="contact.html#subscribe">Updates</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="page-intro fade-up">
+        <span class="eyebrow">Learning resources</span>
+        <h1>My go-to learning library</h1>
+        <p>These are the books, videos, and study strategies I rely on while building web projects and exploring AI and cybersecurity.</p>
+      </section>
+
+      <section class="resource-controls fade-up">
+        <div class="section-heading">
+          <h2>All learning resources</h2>
+          <p>Filter by category and explore the resources I use for books, videos, and study notes.</p>
+        </div>
+        <div class="resource-tools">
+          <div class="resource-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="book">Books</button>
+            <button class="filter-btn" data-filter="video">Videos</button>
+            <button class="filter-btn" data-filter="note">Notes</button>
+          </div>
+          <div class="resource-controls-inline">
+            <label for="resource-search" class="sr-only">Search resources</label>
+            <input id="resource-search" type="search" placeholder="Search titles..." />
+            <button id="clear-filter" class="clear-btn" type="button">Clear filter</button>
+          </div>
+          <span class="active-filter-badge">Active filter: All</span>
+        </div>
+      </section>
+
+      <section class="content-block fade-up">
+        <div class="resources-grid-header">
+          <h2>Resource library</h2>
+          <p>Browse the full collection of study materials in one place.</p>
+        </div>
+        <div class="grid cards-grid resources-grid"></div>
+        <p class="no-results-message">No matching resources found. Try another filter.</p>
+      </section>
+
+      <section class="content-block fade-up">
+        <h2>Private access</h2>
+        <p>Join my Telegram community for direct resource updates, learning notes, and project progress. Follow me on LinkedIn when the profile is ready.</p>
+        <div class="resource-actions">
+          <a href="https://t.me/Kaleb4143" class="btn btn-primary" target="_blank" rel="noreferrer">Join Telegram</a>
+          <a href="mailto:kalebmekonen.kb@gmail.com?subject=LinkedIn%20Profile%20Updates&body=Hi%20Kaleb%2C%0A%0AI%20would%20like%20to%20receive%20an%20update%20when%20your%20LinkedIn%20profile%20is%20ready.%0A%0AThanks!" class="btn btn-secondary">Request LinkedIn update</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 Kaleb Mekonen Legese. Learning resources for web development and career growth.</p>
+      </div>
+    </footer>
+  </body>
+</html>

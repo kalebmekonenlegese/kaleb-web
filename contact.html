@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Contact Kaleb Mekonen Legese for collaboration, internship opportunities, and learning updates." />
+    <meta name="theme-color" content="#2563eb" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <title>Contact | Connect & Collaborate</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script defer src="js/supabase-config.js"></script>
+    <script defer src="js/script.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="index.html" class="brand">Kaleb Mekonen Legese</a>
+        <nav class="site-nav">
+          <a href="index.html">Home</a>
+          <a href="about.html">About</a>
+          <a href="projects.html">Projects</a>
+          <a href="resources.html">Resources</a>
+          <a href="opportunities.html">Opportunities</a>
+          <a href="news.html">News</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+        <div class="newsletter-badge">
+          <a href="#subscribe">Updates</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="page-intro" id="newsletter">
+        <span class="eyebrow">Get in touch</span>
+        <h1>Contact me</h1>
+        <p>Reach out for freelance offers, internship connections, or resource sharing.</p>
+      </section>
+
+      <section class="content-block split-grid contact-grid">
+        <div class="contact-details">
+          <h2>Contact details</h2>
+          <p>Choose the easiest way to connect. I’m available for internship inquiries, collaboration, and learning discussions.</p>
+          <ul class="contact-list">
+            <li><strong>Email:</strong> <a href="mailto:kalebmekonen.kb@gmail.com">kalebmekonen.kb@gmail.com</a></li>
+            <li><strong>Telegram:</strong> <a href="https://t.me/Kaleb4143" target="_blank" rel="noreferrer">@Kaleb4143</a></li>
+            <li><strong>LinkedIn:</strong> <span class="muted-text">Profile launching soon — email for an update.</span></li>
+          </ul>
+          <div id="subscribe" class="newsletter-card card">
+            <h3>Subscribe for updates</h3>
+            <p>Get the latest resource releases, project updates, and internship news directly by email.</p>
+            <form id="subscribe-form" class="subscribe-form">
+              <label for="subscribe-email">Your email</label>
+              <input type="email" id="subscribe-email" name="email" required placeholder="you@example.com" />
+              <button type="submit" class="btn btn-secondary">Subscribe</button>
+              <p id="subscribe-status" class="form-status"></p>
+            </form>
+          </div>
+          <div class="contact-preferences">
+            <span class="contact-pill">Preferred: Email or Telegram</span>
+            <span class="contact-pill">Response time: within 24 hours</span>
+          </div>
+          <a href="https://t.me/Kaleb4143" class="btn btn-secondary" target="_blank" rel="noreferrer">Message me on Telegram</a>
+        </div>
+
+        <div>
+          <h2>Send a message</h2>
+          <p class="small-copy">Leave your name and message below, and I’ll reply as soon as possible.</p>
+          <form id="contact-form" class="contact-form">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required placeholder="Your name" />
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required placeholder="you@example.com" />
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" required placeholder="Tell me about your project or question"></textarea>
+
+            <button type="submit" class="btn btn-primary">Send Message</button>
+            <p id="form-status" class="form-status"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© 2026 Kaleb Mekonen Legese. Ready for collaboration and networking.</p>
+      </div>
+    </footer>
+  </body>
+</html>
