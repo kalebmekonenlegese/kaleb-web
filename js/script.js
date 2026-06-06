@@ -265,6 +265,7 @@ const aboutSectionsData = [
     mediaUrl: 'videos/about-turning-point.mp4',
     poster: 'images/about-turning-point.jpg',
     alt: 'First computer discovery',
+    mediaRotate: true,
     order: 3
   },
   {
@@ -345,16 +346,17 @@ const renderOpportunityCards = (opportunities) => {
 
 const createAboutCard = (section) => {
   let mediaHtml = '';
+  const mediaClass = section.mediaRotate ? 'rotated-media' : '';
   if (section.mediaType === 'video') {
     mediaHtml = `
-      <video controls muted poster="${section.poster || ''}">
+      <video class="${mediaClass}" controls muted poster="${section.poster || ''}">
         <source src="${section.mediaUrl}" type="video/mp4" />
         Your browser does not support this video format.
       </video>
     `;
   } else {
     mediaHtml = `
-      <img src="${section.mediaUrl}" alt="${section.alt || section.title}" />
+      <img src="${section.mediaUrl}" alt="${section.alt || section.title}" class="${mediaClass}" />
     `;
   }
 
