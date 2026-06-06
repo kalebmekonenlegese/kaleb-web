@@ -23,16 +23,31 @@ const openMailTo = (email, subject, body) => {
   window.location.href = mailto;
 };
 
+const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+const scrollToStatus = (element) => {
+  element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
 if (contactForm) {
   contactForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
     const message = document.getElementById('message').value.trim();
+
     if (!name || !email || !message) {
       formStatus.textContent = 'Please provide your name, email, and message.';
       formStatus.classList.remove('success');
       formStatus.classList.add('error');
+      scrollToStatus(formStatus);
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      formStatus.textContent = 'Please enter a valid email address.';
+      formStatus.classList.remove('success');
+      formStatus.classList.add('error');
+      scrollToStatus(formStatus);
       return;
     }
 
@@ -41,6 +56,7 @@ if (contactForm) {
     formStatus.textContent = 'Opening your email client...';
     formStatus.classList.remove('error');
     formStatus.classList.add('success');
+    scrollToStatus(formStatus);
   });
 }
 
@@ -48,11 +64,23 @@ if (subscribeForm) {
   subscribeForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const subscribeEmail = document.getElementById('subscribe-email').value.trim();
+
     if (!subscribeEmail) {
       if (subscribeStatus) {
         subscribeStatus.textContent = 'Enter your email to subscribe.';
         subscribeStatus.classList.remove('success');
         subscribeStatus.classList.add('error');
+        scrollToStatus(subscribeStatus);
+      }
+      return;
+    }
+
+    if (!isValidEmail(subscribeEmail)) {
+      if (subscribeStatus) {
+        subscribeStatus.textContent = 'Please enter a valid email address.';
+        subscribeStatus.classList.remove('success');
+        subscribeStatus.classList.add('error');
+        scrollToStatus(subscribeStatus);
       }
       return;
     }
@@ -63,6 +91,7 @@ if (subscribeForm) {
       subscribeStatus.textContent = 'Opening your email client to subscribe...';
       subscribeStatus.classList.remove('error');
       subscribeStatus.classList.add('success');
+      scrollToStatus(subscribeStatus);
     }
   });
 }

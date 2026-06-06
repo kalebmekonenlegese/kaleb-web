@@ -4,12 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Contact Kaleb Mekonen Legese for collaboration, internship opportunities, and learning updates." />
+    <meta name="author" content="Kaleb Mekonen Legese" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Contact | Connect & Collaborate" />
+    <meta property="og:description" content="Contact Kaleb Mekonen Legese for collaboration, internship opportunities, and learning updates." />
+    <meta property="og:image" content="assets/profile.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#2563eb" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <title>Contact | Connect & Collaborate</title>
     <link rel="stylesheet" href="css/style.css" />
     <script defer src="js/supabase-config.js"></script>
     <script defer src="js/script.js"></script>
+    <script defer src="js/analytics.js"></script>
   </head>
   <body>
     <header class="site-header">
@@ -52,9 +60,9 @@
             <p>Get the latest resource releases, project updates, and internship news directly by email.</p>
             <form id="subscribe-form" class="subscribe-form">
               <label for="subscribe-email">Your email</label>
-              <input type="email" id="subscribe-email" name="email" required placeholder="you@example.com" />
+              <input type="email" id="subscribe-email" name="email" required autocomplete="email" placeholder="you@example.com" />
               <button type="submit" class="btn btn-secondary">Subscribe</button>
-              <p id="subscribe-status" class="form-status"></p>
+              <p id="subscribe-status" class="form-status" aria-live="polite"></p>
             </form>
           </div>
           <div class="contact-preferences">
@@ -69,16 +77,16 @@
           <p class="small-copy">Leave your name and message below, and I’ll reply as soon as possible.</p>
           <form id="contact-form" class="contact-form">
             <label for="name">Name</label>
-            <input type="text" id="name" name="name" required placeholder="Your name" />
+            <input type="text" id="name" name="name" required autocomplete="name" placeholder="Your name" />
 
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required placeholder="you@example.com" />
+            <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com" />
 
             <label for="message">Message</label>
             <textarea id="message" name="message" rows="5" required placeholder="Tell me about your project or question"></textarea>
 
             <button type="submit" class="btn btn-primary">Send Message</button>
-            <p id="form-status" class="form-status"></p>
+            <p id="form-status" class="form-status" aria-live="polite"></p>
           </form>
         </div>
       </section>
