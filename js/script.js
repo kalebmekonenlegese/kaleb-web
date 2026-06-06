@@ -198,6 +198,64 @@ const supabaseHeaders = useSupabase
       Accept: 'application/json'
     }
   : {};
+// Unified Supabase client helpers (uses js/supabaseClient.js)
+const fetchData = async (tableName) => {
+  if (window.supabaseClient && typeof window.supabaseClient.fetchData === 'function') {
+    return window.supabaseClient.fetchData(tableName);
+  }
+  throw new Error('Supabase client not initialized');
+};
+
+let realtimeSupported = false;
+const realtimeChannels = {};
+
+const setupRealtimeFor = (tableName, onChange) => {
+  try {
+    if (window.supabaseClient && typeof window.supabaseClient.subscribeToTable === 'function') {
+      realtimeSupported = true;
+      const chan = window.supabaseClient.subscribeToTable(tableName, (payload) => {
+        console.log(`Realtime payload for ${tableName}:`, payload);
+        onChange && onChange(payload);
+      });
+      realtimeChannels[tableName] = chan;
+      return chan;
+    }
+  } catch (err) {
+    console.error('Error setting up realtime:', err);
+  }
+  return null;
+};
+
+// Fallback polling (used only when realtime not available)
+const pollingIntervals = {};
+const startPolling = (name, fn, ms = 12000) => {
+  if (pollingIntervals[name]) return;
+  pollingIntervals[name] = setInterval(() => {
+    console.log(`Polling ${name}...`);
+    fn().catch((e) => console.error(e));
+  }, ms);
+};
+
+// Wrapper loaders that use Supabase client when available
+const loadNews = async () => {
+  if (useSupabase) return fetchData(supabaseNewsTable);
+  return loadNewsData();
+};
+
+const loadResources = async () => {
+  if (useSupabase) return fetchData(supabaseResourcesTable);
+  return loadResourcesData();
+};
+
+const loadProjects = async () => {
+  if (useSupabase) return fetchData(supabaseProjectsTable);
+  return loadProjectsData();
+};
+
+const loadAbout = async () => {
+  if (useSupabase) return fetchData(supabaseAboutTable);
+  return loadAboutData();
+};
 let activeFilter = 'all';
 let activeSearch = '';
 
@@ -377,17 +435,59 @@ const createAboutCard = (section) => {
 
 const renderAboutCards = (sections) => {
   if (!aboutStoryCards) return;
-  const sorted = Array.isArray(sections)
-    ? [...sections].sort((a, b) => (a.order || 0) - (b.order || 0))
-    : [];
-  aboutStoryCards.innerHTML = sorted.map(createAboutCard).join('');
+  const sorted = Array.isArray(sections) ? [...sections].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+  aboutStoryCards.innerHTML = '';
+  sorted.forEach((section) => {
+    const card = document.createElement('article');
+    card.className = 'story-card';
+    if (section.reverse) card.classList.add('reverse');
+
+    const imageWrap = document.createElement('div');
+    imageWrap.className = 'story-card-image';
+    if (section.mediaType === 'video') {
+      const video = document.createElement('video');
+      video.controls = true;
+      video.muted = true;
+      if (section.poster) video.poster = section.poster;
+      const src = document.createElement('source');
+      src.src = section.mediaUrl || '';
+      src.type = 'video/mp4';
+      video.appendChild(src);
+      imageWrap.appendChild(video);
+    } else {
+      const img = document.createElement('img');
+      img.src = section.mediaUrl || '';
+      img.alt = section.alt || section.title || '';
+      imageWrap.appendChild(img);
+    }
+
+    const content = document.createElement('div');
+    content.className = 'story-card-content';
+    if (section.label) {
+      const span = document.createElement('span');
+      span.className = 'story-card-year';
+      span.textContent = section.label;
+      content.appendChild(span);
+    }
+    const h2 = document.createElement('h2');
+    h2.textContent = section.title || '';
+    const p = document.createElement('p');
+    p.textContent = section.description || '';
+    content.appendChild(h2);
+    content.appendChild(p);
+
+    card.appendChild(imageWrap);
+    card.appendChild(content);
+    aboutStoryCards.appendChild(card);
+  });
 };
 
 const fetchSupabaseTable = async (table, params = '') => {
   if (!useSupabase) return null;
   const response = await fetch(`${supabaseBaseUrl}/${table}${params}`, {
     method: 'GET',
-    headers: supabaseHeaders
+    headers: supabaseHeaders,
+    cache: 'no-store'
   });
   if (!response.ok) {
     throw new Error(`Supabase request failed: ${response.status} ${response.statusText}`);
@@ -413,7 +513,7 @@ const loadResourcesData = () => {
   if (useSupabase) {
     return fetchSupabaseTable(supabaseResourcesTable, '?select=*');
   }
-  return fetch(resourcesDataPath).then((response) => {
+  return fetch(resourcesDataPath + '?_=' + Date.now(), { cache: 'no-store' }).then((response) => {
     if (!response.ok) throw new Error('Unable to load resources.');
     return response.json();
   });
@@ -423,7 +523,7 @@ const loadNewsData = () => {
   if (useSupabase) {
     return fetchSupabaseTable(supabaseNewsTable, '?select=*');
   }
-  return fetch(newsDataPath).then((response) => {
+  return fetch(newsDataPath + '?_=' + Date.now(), { cache: 'no-store' }).then((response) => {
     if (!response.ok) throw new Error('Unable to load news.');
     return response.json();
   });
@@ -450,22 +550,46 @@ const createResourceButton = (resource) => {
 
 const renderResourceCards = (resources) => {
   if (!resourcesGrid) return;
-  resourcesGrid.innerHTML = resources
-    .map((resource) => {
-      const categoryLabel = formatCategoryLabel(resource.category);
-      const buttonHtml = createResourceButton(resource);
-      return `
-        <article class="resource-card" data-category="${resource.category}">
-          <span class="resource-tag">${categoryLabel}</span>
-          <h3>${resource.title}</h3>
-          <p>${resource.description}</p>
-          ${buttonHtml}
-        </article>
-      `;
-    })
-    .join('');
+  resourcesGrid.innerHTML = '';
+  resourceCards = [];
 
-  resourceCards = Array.from(document.querySelectorAll('.resource-card'));
+  const list = Array.isArray(resources) ? resources : (resources && resources.resources) ? resources.resources : [];
+
+  list.forEach((resource) => {
+    const card = document.createElement('article');
+    card.className = 'resource-card';
+    if (resource.category) card.dataset.category = resource.category;
+
+    const tag = document.createElement('span');
+    tag.className = 'resource-tag';
+    tag.textContent = formatCategoryLabel(resource.category);
+
+    const h3 = document.createElement('h3');
+    h3.textContent = resource.title || '';
+
+    const p = document.createElement('p');
+    p.textContent = resource.description || '';
+
+    const actions = document.createElement('div');
+    if (resource.url && resource.buttonText) {
+      const a = document.createElement('a');
+      a.href = resource.url;
+      a.textContent = resource.buttonText;
+      a.className = resource.category === 'note' ? 'btn btn-primary' : 'btn btn-secondary';
+      if (resource.openInNewTab) { a.target = '_blank'; a.rel = 'noreferrer'; }
+      if (resource.download) a.setAttribute('download', '');
+      actions.appendChild(a);
+    }
+
+    card.appendChild(tag);
+    card.appendChild(h3);
+    card.appendChild(p);
+    card.appendChild(actions);
+
+    resourcesGrid.appendChild(card);
+    resourceCards.push(card);
+  });
+
   updateResourceFilter(activeFilter, activeSearch);
 };
 
@@ -482,7 +606,38 @@ const createNewsCard = (news) => {
 
 const renderNewsCards = (newsItems) => {
   if (!newsGrid) return;
-  newsGrid.innerHTML = newsItems.map(createNewsCard).join('');
+  newsGrid.innerHTML = '';
+  const list = Array.isArray(newsItems) ? newsItems : (newsItems && newsItems.news) ? newsItems.news : [];
+  list.forEach((news) => {
+    const article = document.createElement('article');
+    article.className = 'news-item';
+
+    const tag = document.createElement('span');
+    tag.className = 'resource-tag';
+    tag.textContent = news.category || '';
+
+    const h3 = document.createElement('h3');
+    h3.textContent = news.title || '';
+
+    const p = document.createElement('p');
+    p.textContent = news.summary || '';
+
+    article.appendChild(tag);
+    article.appendChild(h3);
+    article.appendChild(p);
+
+    if (news.url) {
+      const a = document.createElement('a');
+      a.className = 'btn btn-link';
+      a.href = news.url;
+      a.target = '_blank';
+      a.rel = 'noreferrer';
+      a.textContent = news.buttonText || 'Read';
+      article.appendChild(a);
+    }
+
+    newsGrid.appendChild(article);
+  });
 };
 
 const createProjectButton = (project) => {
@@ -523,10 +678,62 @@ const createProjectCard = (project) => {
 
 const renderProjectCards = (projects) => {
   if (!projectsGrid) return;
-  projectsGrid.innerHTML = projects.map(createProjectCard).join('');
+  projectsGrid.innerHTML = '';
+  const list = Array.isArray(projects) ? projects : (projects && projects.projects) ? projects.projects : [];
+  list.forEach((project) => {
+    const article = document.createElement('article');
+    article.className = 'project-card';
+
+    const imageWrap = document.createElement('div');
+    imageWrap.className = 'project-image';
+    if (project.imageUrl) imageWrap.style.backgroundImage = `url('${project.imageUrl}')`;
+    const imageLabel = document.createElement('span');
+    imageLabel.className = 'project-image-label';
+    imageLabel.textContent = project.imageLabel || project.category || 'Project';
+    imageWrap.appendChild(imageLabel);
+
+    const content = document.createElement('div');
+    content.className = 'project-content';
+    const h2 = document.createElement('h2');
+    h2.textContent = project.title || '';
+    const p = document.createElement('p');
+    p.textContent = project.description || '';
+
+    const status = document.createElement('p');
+    status.className = 'project-meta';
+    if (project.status || project.tech) status.textContent = `${project.status || ''}${project.status && project.tech ? ' | ' : ''}${project.tech || ''}`;
+
+    const links = document.createElement('div');
+    links.className = 'project-links';
+    if (project.sourceUrl) {
+      const a = document.createElement('a');
+      a.className = 'btn btn-secondary';
+      a.href = project.sourceUrl;
+      if (!project.sourceUrl.startsWith('mailto:')) { a.target = '_blank'; a.rel = 'noreferrer'; }
+      a.textContent = project.sourceLabel || 'Source';
+      links.appendChild(a);
+    }
+    if (project.demoUrl) {
+      const a = document.createElement('a');
+      a.className = 'btn btn-link';
+      a.href = project.demoUrl;
+      if (!project.demoUrl.startsWith('mailto:')) { a.target = '_blank'; a.rel = 'noreferrer'; }
+      a.textContent = project.demoLabel || 'Demo';
+      links.appendChild(a);
+    }
+
+    content.appendChild(h2);
+    content.appendChild(p);
+    if (status.textContent) content.appendChild(status);
+    content.appendChild(links);
+
+    article.appendChild(imageWrap);
+    article.appendChild(content);
+    projectsGrid.appendChild(article);
+  });
   const projectMessage = document.querySelector('.no-results-message');
   if (projectMessage) {
-    projectMessage.style.display = projects.length === 0 ? 'block' : 'none';
+    projectMessage.style.display = list.length === 0 ? 'block' : 'none';
   }
 };
 
@@ -587,9 +794,9 @@ if (clearFilterButton) {
 }
 
 if (resourcesGrid) {
-  loadResourcesData()
+  loadResources()
     .then((data) => {
-      const resources = useSupabase ? data : data.resources;
+      const resources = Array.isArray(data) ? data : (data && data.resources) ? data.resources : [];
       if (Array.isArray(resources)) {
         renderResourceCards(resources);
       }
@@ -607,12 +814,17 @@ if (resourcesGrid) {
         resourcesGridHeader.style.display = 'none';
       }
     });
+  // setup realtime or polling
+  if (useSupabase) {
+    const chan = setupRealtimeFor(supabaseResourcesTable, () => loadResources().then((d) => renderResourceCards(Array.isArray(d) ? d : (d && d.resources) ? d.resources : [])));
+    if (!chan) startPolling('resources', async () => renderResourceCards(await loadResources()));
+  }
 }
 
 if (newsGrid) {
-  loadNewsData()
+  loadNews()
     .then((data) => {
-      const newsItems = useSupabase ? data : data.news;
+      const newsItems = Array.isArray(data) ? data : (data && data.news) ? data.news : [];
       if (Array.isArray(newsItems)) {
         renderNewsCards(newsItems);
       }
@@ -628,12 +840,16 @@ if (newsGrid) {
         newsMessage.style.display = 'block';
       }
     });
+  if (useSupabase) {
+    const chan = setupRealtimeFor(supabaseNewsTable, () => loadNews().then((d) => renderNewsCards(Array.isArray(d) ? d : (d && d.news) ? d.news : [])));
+    if (!chan) startPolling('news', async () => renderNewsCards(await loadNews()));
+  }
 }
 
 if (projectsGrid) {
-  loadProjectsData()
+  loadProjects()
     .then((data) => {
-      const projects = useSupabase ? data : data;
+      const projects = Array.isArray(data) ? data : (data && data.projects) ? data.projects : [];
       if (Array.isArray(projects)) {
         renderProjectCards(projects);
       }
@@ -649,12 +865,16 @@ if (projectsGrid) {
         projectMessage.style.display = 'block';
       }
     });
+  if (useSupabase) {
+    const chan = setupRealtimeFor(supabaseProjectsTable, () => loadProjects().then((d) => renderProjectCards(Array.isArray(d) ? d : (d && d.projects) ? d.projects : [])));
+    if (!chan) startPolling('projects', async () => renderProjectCards(await loadProjects()));
+  }
 }
 
 if (aboutStoryCards) {
-  loadAboutData()
+  loadAbout()
     .then((data) => {
-      const aboutSections = useSupabase ? data : data;
+      const aboutSections = Array.isArray(data) ? data : (data && data.about) ? data.about : (Array.isArray(data) ? data : data);
       if (Array.isArray(aboutSections) && aboutSections.length) {
         renderAboutCards(aboutSections);
       }
@@ -665,6 +885,10 @@ if (aboutStoryCards) {
         aboutStoryCards.innerHTML = '<p class="no-results-message">Unable to load about content right now.</p>';
       }
     });
+  if (useSupabase) {
+    const chan = setupRealtimeFor(supabaseAboutTable, () => loadAbout().then((d) => renderAboutCards(Array.isArray(d) ? d : (d && d.about) ? d.about : d)));
+    if (!chan) startPolling('about', async () => renderAboutCards(await loadAbout()));
+  }
 }
 
 if (opportunitiesGrid) {
