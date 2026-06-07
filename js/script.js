@@ -180,6 +180,33 @@ const projectsGrid = document.querySelector('.projects-grid');
 const opportunitiesGrid = document.querySelector('.opportunities-grid');
 const aboutStoryCards = document.querySelector('.story-cards');
 const resourcesDataPath = 'resources.json';
+
+const supabaseStatusBanner = (() => {
+  const banner = document.createElement('div');
+  banner.id = 'supabase-status-banner';
+  banner.className = 'status-banner';
+  banner.textContent = 'Loading content...';
+  document.body.prepend(banner);
+  return banner;
+})();
+
+const updateSupabaseStatus = (message, variant = 'info', show = true) => {
+  if (!supabaseStatusBanner) return;
+  supabaseStatusBanner.textContent = message;
+  supabaseStatusBanner.className = `status-banner ${variant} ${show ? 'visible' : ''}`;
+  if (show && variant === 'success') {
+    window.clearTimeout(supabaseStatusBanner._hideTimeout);
+    supabaseStatusBanner._hideTimeout = window.setTimeout(() => {
+      supabaseStatusBanner.classList.remove('visible');
+    }, 3200);
+  }
+};
+
+const clearSupabaseStatus = () => {
+  if (supabaseStatusBanner) {
+    supabaseStatusBanner.classList.remove('visible');
+  }
+};
 const newsDataPath = 'news.json';
 const supabaseConfig = window.SUPABASE_CONFIG || {};
 const supabaseUrl = supabaseConfig.url || '';
@@ -200,10 +227,32 @@ const supabaseHeaders = useSupabase
   : {};
 // Unified Supabase client helpers (uses js/supabaseClient.js)
 const fetchData = async (tableName) => {
-  if (window.supabaseClient && typeof window.supabaseClient.fetchData === 'function') {
-    return window.supabaseClient.fetchData(tableName);
+  updateSupabaseStatus(`Loading ${tableName}...`, 'info');
+
+  // Prefer the js client when available, fallback to REST endpoint.
+  try {
+    if (window.supabaseClient && typeof window.supabaseClient.fetchData === 'function') {
+      console.log(`fetchData: using supabase client for table ${tableName}`);
+      const data = await window.supabaseClient.fetchData(tableName);
+      updateSupabaseStatus(`Loaded ${tableName} from Supabase`, 'success');
+      return data;
+    }
+  } catch (err) {
+    console.warn('fetchData client error, falling back to REST:', err);
   }
-  throw new Error('Supabase client not initialized');
+
+  // Fallback: use REST fetch
+  try {
+    console.log(`fetchData: using REST fallback for table ${tableName}`);
+    const data = await fetchSupabaseTable(tableName, '?select=*');
+    updateSupabaseStatus(`Loaded ${tableName} via REST fallback`, 'success');
+    return data;
+  } catch (err) {
+    const message = `Failed to load ${tableName}: ${err.message || 'unknown error'}`;
+    console.error('fetchData REST fallback failed:', err);
+    updateSupabaseStatus(message, 'error');
+    throw err;
+  }
 };
 
 let realtimeSupported = false;
@@ -499,20 +548,23 @@ const loadAboutData = () => {
   if (useSupabase) {
     return fetchSupabaseTable(supabaseAboutTable, '?select=*');
   }
+  updateSupabaseStatus('Using local about content fallback', 'info');
   return Promise.resolve(aboutSectionsData);
 };
 
 const loadOpportunitiesData = () => {
   if (useSupabase) {
-    return fetchSupabaseTable(supabaseOpportunitiesTable, '?select=*');
+    return fetchData(supabaseOpportunitiesTable);
   }
+  updateSupabaseStatus('Using local opportunities fallback', 'info');
   return Promise.resolve(opportunitiesData);
 };
 
 const loadResourcesData = () => {
   if (useSupabase) {
-    return fetchSupabaseTable(supabaseResourcesTable, '?select=*');
+    return fetchData(supabaseResourcesTable);
   }
+  updateSupabaseStatus('Using local resources fallback', 'info');
   return fetch(resourcesDataPath + '?_=' + Date.now(), { cache: 'no-store' }).then((response) => {
     if (!response.ok) throw new Error('Unable to load resources.');
     return response.json();
@@ -521,8 +573,9 @@ const loadResourcesData = () => {
 
 const loadNewsData = () => {
   if (useSupabase) {
-    return fetchSupabaseTable(supabaseNewsTable, '?select=*');
+    return fetchData(supabaseNewsTable);
   }
+  updateSupabaseStatus('Using local news fallback', 'info');
   return fetch(newsDataPath + '?_=' + Date.now(), { cache: 'no-store' }).then((response) => {
     if (!response.ok) throw new Error('Unable to load news.');
     return response.json();
@@ -531,8 +584,9 @@ const loadNewsData = () => {
 
 const loadProjectsData = () => {
   if (useSupabase) {
-    return fetchSupabaseTable(supabaseProjectsTable, '?select=*');
+    return fetchData(supabaseProjectsTable);
   }
+  updateSupabaseStatus('Using local projects fallback', 'info');
   return Promise.resolve(projectsData);
 };
 
