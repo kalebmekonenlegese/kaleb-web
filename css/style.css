@@ -623,6 +623,7 @@ h1 {
   color: var(--text);
   border: 1px solid var(--border);
   transition: transform 0.2s ease, background 0.25s ease, border-color 0.25s ease;
+  margin-top: 10px;
 }
 
 .btn-secondary:hover {
