@@ -1,0 +1,16 @@
+{
+  "name": "Kaleb Mekonen | Websites for Growing Businesses",
+  "short_name": "Kaleb Mekonen",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#0f172a",
+  "description": "Modern business websites for hotels, restaurants, real estate agencies, and growing businesses.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

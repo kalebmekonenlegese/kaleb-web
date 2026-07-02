@@ -124,49 +124,6 @@ const fadeObserver = new IntersectionObserver(
 
 fadeElements.forEach((el) => fadeObserver.observe(el));
 
-const heroTyping = document.getElementById('hero-typing');
-if (heroTyping) {
-  const phrases = [
-    'Building web interfaces that feel fast.',
-    'Learning AI and cybersecurity concepts.',
-    'Turning ideas into practical digital solutions.',
-    'Creating portfolio projects that tell a story.'
-  ];
-  let phraseIndex = 0;
-  let charIndex = 0;
-  let deleting = false;
-  const cursor = document.createElement('span');
-  cursor.className = 'cursor-blink';
-  heroTyping.appendChild(cursor);
-
-  const typePhrase = () => {
-    const currentPhrase = phrases[phraseIndex];
-    if (!deleting) {
-      heroTyping.textContent = currentPhrase.slice(0, charIndex + 1);
-      heroTyping.appendChild(cursor);
-      charIndex += 1;
-      if (charIndex === currentPhrase.length) {
-        deleting = true;
-        setTimeout(typePhrase, 2000);
-        return;
-      }
-      setTimeout(typePhrase, 80);
-    } else {
-      heroTyping.textContent = currentPhrase.slice(0, charIndex - 1);
-      heroTyping.appendChild(cursor);
-      charIndex -= 1;
-      if (charIndex === 0) {
-        deleting = false;
-        phraseIndex = (phraseIndex + 1) % phrases.length;
-        setTimeout(typePhrase, 500);
-        return;
-      }
-      setTimeout(typePhrase, 40);
-    }
-  };
-  typePhrase();
-}
-
 const filterButtons = document.querySelectorAll('.filter-btn');
 let resourceCards = [];
 const activeFilterBadge = document.querySelector('.active-filter-badge');
@@ -177,6 +134,8 @@ const clearFilterButton = document.getElementById('clear-filter');
 const resourcesGrid = document.querySelector('.resources-grid');
 const newsGrid = document.querySelector('.news-grid');
 const projectsGrid = document.querySelector('.projects-grid');
+const selectedWorkGrid = document.querySelector('.selected-work-grid');
+const featuredProjectSpotlight = document.querySelector('.featured-project-spotlight');
 const opportunitiesGrid = document.querySelector('.opportunities-grid');
 const aboutStoryCards = document.querySelector('.story-cards');
 const resourcesDataPath = 'resources.json';
@@ -310,37 +269,57 @@ let activeSearch = '';
 
 const projectsData = [
   {
-    title: 'Hotel Management Website',
-    description: "A modern website developed for my family's hotel business to strengthen its online presence and support future digital services.",
+    title: 'Hatsey Kaleb Hotel Website',
+    projectType: 'Personal Project',
+    category: 'Hotel Website',
+    description: "A business website created for my family's hotel to present the property more professionally online and make it easier for guests to explore services and get in touch.",
+    businessGoal: 'Build trust with potential guests, improve the browsing experience on mobile devices, and create a clearer path for direct inquiries.',
+    challenge: 'The hotel needed a more polished online presence that could present rooms, services, and contact details clearly without overwhelming visitors.',
+    solution: 'I designed a clean, mobile-friendly website structure that prioritizes clear navigation, strong visual hierarchy, and simple contact pathways for future guests.',
+    keyFeatures: [
+      'Mobile-first layout for guests browsing on phones',
+      'Clear sections for rooms, services, and business information',
+      'Focused calls to action for direct inquiries and contact',
+      'Simple structure that can grow with future hotel content'
+    ],
     tech: 'HTML, CSS, JavaScript',
-    status: 'Live',
-    imageLabel: 'Hotel site',
-    sourceUrl: 'mailto:kalebmekonen.kb@gmail.com?subject=Hotel%20Website%20Source%20Request&body=Hi%20Kaleb%2C%0A%0AI%20would%20like%20to%20request%20access%20to%20the%20source%20code%20for%20the%20Hotel%20Management%20Website.%0A%0AThanks!',
-    sourceLabel: 'Request source',
-    demoUrl: 'mailto:kalebmekonen.kb@gmail.com?subject=Hotel%20Website%20Demo%20Request&body=Hi%20Kaleb%2C%0A%0AI%20would%20like%20to%20see%20a%20demo%20of%20the%20Hotel%20Management%20Website.%0A%0AThanks!',
-    demoLabel: 'Request demo'
+    status: 'Built for a family hotel business',
+    imageLabel: 'Hotel Website',
+    featured: true,
+    visualNote: 'Public screenshots and final live links will be added once the polished public version is ready.',
+    sourceUrl: 'mailto:kalebmekonen.kb@gmail.com?subject=Hatsey%20Kaleb%20Hotel%20GitHub%20Request&body=Hi%20Kaleb%2C%0A%0AI%20would%20like%20to%20request%20GitHub%20access%20for%20the%20Hatsey%20Kaleb%20Hotel%20Website.%0A%0AThanks!',
+    sourceLabel: 'GitHub (Request Access)',
+    demoUrl: 'mailto:kalebmekonen.kb@gmail.com?subject=Hatsey%20Kaleb%20Hotel%20Live%20Demo%20Request&body=Hi%20Kaleb%2C%0A%0AI%20would%20like%20to%20request%20live%20demo%20access%20for%20the%20Hatsey%20Kaleb%20Hotel%20Website.%0A%0AThanks!',
+    demoLabel: 'Live Demo (Request Access)',
+    availabilityNote: 'The public live demo and GitHub repository are currently shared on request while the project is being finalized.'
   },
   {
     title: 'Walya Entertainment Branch Management System',
-    description: 'Designed as a centralized digital management platform to coordinate branch operations and simplify administration across multiple regional locations.',
+    projectType: 'Concept Project',
+    category: 'Operations Platform',
+    description: 'A concept platform designed to help a growing entertainment business coordinate branch activity from one central system.',
+    businessGoal: 'Reduce manual coordination, improve visibility across branches, and make operations easier to manage as the business grows.',
     tech: 'HTML, CSS, JavaScript',
-    status: 'Concept & Planning',
-    imageLabel: 'Branch system',
-    sourceUrl: 'mailto:kalebmekonen.kb@gmail.com?subject=Walya%20Concept%20Access&body=Hi%20Kaleb%2C%0A%0AI%20would%20like%20to%20learn%20more%20about%20the%20Walya%20Entertainment%20Branch%20Management%20System.%0A%0AThanks!',
-    sourceLabel: 'Request details',
-    demoUrl: 'mailto:kalebmekonen.kb@gmail.com?subject=Walya%20Concept%20Discussion&body=Hi%20Kaleb%2C%0A%0AI%20am%20interested%20in%20the%20Walya%20Entertainment%20Branch%20Management%20System.%0A%0AThanks!',
-    demoLabel: 'Contact me'
+    status: 'In planning',
+    imageLabel: 'Operations Concept',
+    sourceUrl: 'mailto:kalebmekonen.kb@gmail.com?subject=Walya%20Concept%20Overview%20Request&body=Hi%20Kaleb%2C%0A%0AI%20would%20like%20to%20request%20an%20overview%20of%20the%20Walya%20Entertainment%20Branch%20Management%20System.%0A%0AThanks!',
+    sourceLabel: 'Request Overview',
+    demoUrl: 'mailto:kalebmekonen.kb@gmail.com?subject=Walya%20Concept%20Discussion&body=Hi%20Kaleb%2C%0A%0AI%20would%20like%20to%20discuss%20the%20Walya%20Entertainment%20Branch%20Management%20System.%0A%0AThanks!',
+    demoLabel: 'Discuss Project'
   },
   {
-    title: 'DeliWay – Digital Delivery Platform',
-    description: 'A business initiative inspired by real-world delivery challenges, aimed at connecting customers, local businesses, and delivery personnel through a simple digital platform.',
+    title: 'DeliWay Delivery Platform',
+    projectType: 'Concept Project',
+    category: 'Delivery Platform',
+    description: 'A concept platform inspired by local delivery challenges, designed to connect customers, businesses, and delivery personnel through one simple experience.',
+    businessGoal: 'Help local businesses reach more customers and streamline delivery coordination with a clearer digital workflow.',
     tech: 'HTML, CSS, JavaScript',
-    status: 'Concept & Planning',
-    imageLabel: 'Delivery app',
-    sourceUrl: 'mailto:kalebmekonen.kb@gmail.com?subject=DeliWay%20Concept%20Access&body=Hi%20Kaleb%2C%0A%0AI%20would%20like%20to%20learn%20more%20about%20the%20DeliWay%20Delivery%20Platform.%0A%0AThanks!',
-    sourceLabel: 'Request details',
-    demoUrl: 'mailto:kalebmekonen.kb@gmail.com?subject=DeliWay%20Concept%20Discussion&body=Hi%20Kaleb%2C%0A%0AI%20am%20interested%20in%20the%20DeliWay%20digital%20delivery%20platform.%0A%0AThanks!',
-    demoLabel: 'Contact me'
+    status: 'In planning',
+    imageLabel: 'Delivery Concept',
+    sourceUrl: 'mailto:kalebmekonen.kb@gmail.com?subject=DeliWay%20Concept%20Overview%20Request&body=Hi%20Kaleb%2C%0A%0AI%20would%20like%20to%20request%20an%20overview%20of%20the%20DeliWay%20Delivery%20Platform.%0A%0AThanks!',
+    sourceLabel: 'Request Overview',
+    demoUrl: 'mailto:kalebmekonen.kb@gmail.com?subject=DeliWay%20Concept%20Discussion&body=Hi%20Kaleb%2C%0A%0AI%20would%20like%20to%20discuss%20the%20DeliWay%20Delivery%20Platform.%0A%0AThanks!',
+    demoLabel: 'Discuss Project'
   }
 ];
 
@@ -694,40 +673,237 @@ const renderNewsCards = (newsItems) => {
   });
 };
 
-const createProjectButton = (project) => {
-  const buttons = [];
-  if (project.sourceUrl) {
-    const label = project.sourceLabel || 'Source';
-    const target = project.sourceUrl.startsWith('mailto:') ? '' : ' target="_blank" rel="noreferrer"';
-    buttons.push(`<a href="${project.sourceUrl}" class="btn btn-secondary"${target}>${label}</a>`);
+const getProjectTypeLabel = (project) => project.projectType || project.status || 'Project';
+const getProjectTechLabel = (project) => {
+  if (Array.isArray(project.technology) && project.technology.length) {
+    return project.technology.join(', ');
   }
-  if (project.demoUrl) {
-    const label = project.demoLabel || 'Demo';
-    const target = project.demoUrl.startsWith('mailto:') ? '' : ' target="_blank" rel="noreferrer"';
-    buttons.push(`<a href="${project.demoUrl}" class="btn btn-link"${target}>${label}</a>`);
-  }
-  return buttons.join('');
+  return project.tech || '';
 };
 
-const createProjectCard = (project) => {
-  const style = project.imageUrl ? `style="background-image: url('${project.imageUrl}');"` : '';
-  const label = project.imageLabel || project.category || 'Project';
-  const status = project.status ? `<p class="project-meta">${project.status}${project.tech ? ` | ${project.tech}` : ''}</p>` : project.tech ? `<p class="project-meta">${project.tech}</p>` : '';
-  return `
-    <article class="project-card">
-      <div class="project-image" ${style}>
-        <span class="project-image-label">${label}</span>
-      </div>
-      <div class="project-content">
-        <h2>${project.title}</h2>
-        <p>${project.description}</p>
-        ${status}
-        <div class="project-links">
-          ${createProjectButton(project)}
-        </div>
-      </div>
-    </article>
+const createProjectLink = (url, label, className) => {
+  if (!url || !label) return null;
+  const link = document.createElement('a');
+  link.className = className;
+  link.href = url;
+  link.textContent = label;
+  if (!url.startsWith('mailto:') && !url.startsWith('contact.html')) {
+    link.target = '_blank';
+    link.rel = 'noreferrer';
+  }
+  return link;
+};
+
+const createProjectLinks = (project, variant = 'card') => {
+  const links = document.createElement('div');
+  links.className = variant === 'featured' ? 'project-links featured-project-links' : 'project-links';
+
+  const demoLink = createProjectLink(project.demoUrl, project.demoLabel || 'Live Demo', 'btn btn-primary');
+  const sourceLink = createProjectLink(project.sourceUrl, project.sourceLabel || 'GitHub', 'btn btn-secondary');
+
+  if (demoLink) links.appendChild(demoLink);
+  if (sourceLink) links.appendChild(sourceLink);
+
+  return links;
+};
+
+const createProjectVisual = (project, visualClass = 'project-image') => {
+  const imageWrap = document.createElement('div');
+  imageWrap.className = visualClass;
+  if (project.imageUrl) {
+    imageWrap.style.backgroundImage = `url('${project.imageUrl}')`;
+  }
+  const imageLabel = document.createElement('span');
+  imageLabel.className = 'project-image-label';
+  imageLabel.textContent = project.imageLabel || project.category || 'Project';
+  imageWrap.appendChild(imageLabel);
+  return imageWrap;
+};
+
+const createStandardProjectCard = (project) => {
+  const article = document.createElement('article');
+  article.className = 'project-card';
+  article.appendChild(createProjectVisual(project));
+
+  const content = document.createElement('div');
+  content.className = 'project-content';
+
+  const typeBadge = document.createElement('span');
+  typeBadge.className = 'project-type-badge';
+  typeBadge.textContent = getProjectTypeLabel(project);
+
+  const h2 = document.createElement('h2');
+  h2.textContent = project.title || '';
+
+  const description = document.createElement('p');
+  description.textContent = project.description || '';
+
+  const goal = document.createElement('p');
+  goal.className = 'project-business-goal';
+  goal.textContent = `Business goal: ${project.businessGoal || 'Provide a more effective digital experience for the business.'}`;
+
+  const meta = document.createElement('p');
+  meta.className = 'project-meta';
+  meta.textContent = `Technology: ${getProjectTechLabel(project) || 'Not specified'}`;
+
+  content.appendChild(typeBadge);
+  content.appendChild(h2);
+  content.appendChild(description);
+  content.appendChild(goal);
+  content.appendChild(meta);
+  content.appendChild(createProjectLinks(project));
+
+  if (project.availabilityNote) {
+    const note = document.createElement('p');
+    note.className = 'project-link-note';
+    note.textContent = project.availabilityNote;
+    content.appendChild(note);
+  }
+
+  article.appendChild(content);
+  return article;
+};
+
+const renderFeaturedProject = (projects) => {
+  if (!featuredProjectSpotlight) return;
+  featuredProjectSpotlight.innerHTML = '';
+
+  const list = Array.isArray(projects) ? projects : [];
+  const featuredProject = list.find((project) => project.featured) || list[0];
+
+  if (!featuredProject) {
+    featuredProjectSpotlight.textContent = 'Featured project details will be added here.';
+    return;
+  }
+
+  const card = document.createElement('article');
+  card.className = 'featured-case-study-card';
+
+  const visual = document.createElement('div');
+  visual.className = 'featured-case-study-visual';
+
+  const visualFrame = document.createElement('div');
+  visualFrame.className = 'featured-case-study-frame';
+
+  const visualBar = document.createElement('div');
+  visualBar.className = 'featured-case-study-bar';
+  for (let i = 0; i < 3; i += 1) {
+    visualBar.appendChild(document.createElement('span'));
+  }
+
+  const visualBody = document.createElement('div');
+  visualBody.className = 'featured-case-study-body';
+
+  const visualTag = document.createElement('span');
+  visualTag.className = 'project-image-label';
+  visualTag.textContent = featuredProject.category || 'Featured Project';
+
+  const visualTitle = document.createElement('h3');
+  visualTitle.textContent = featuredProject.title || '';
+
+  const visualGoal = document.createElement('p');
+  visualGoal.textContent = featuredProject.businessGoal || featuredProject.description || '';
+
+  const visualLayout = document.createElement('div');
+  visualLayout.className = 'featured-case-study-layout';
+  visualLayout.innerHTML = `
+    <div class="featured-case-study-block featured-case-study-block-lg"></div>
+    <div class="featured-case-study-row">
+      <div class="featured-case-study-block"></div>
+      <div class="featured-case-study-block"></div>
+    </div>
   `;
+
+  const visualNote = document.createElement('p');
+  visualNote.className = 'featured-case-study-note';
+  visualNote.textContent = featuredProject.visualNote || 'A real project preview will appear here when the public version is ready.';
+
+  visualBody.appendChild(visualTag);
+  visualBody.appendChild(visualTitle);
+  visualBody.appendChild(visualGoal);
+  visualBody.appendChild(visualLayout);
+  visualBody.appendChild(visualNote);
+
+  visualFrame.appendChild(visualBar);
+  visualFrame.appendChild(visualBody);
+  visual.appendChild(visualFrame);
+
+  const content = document.createElement('div');
+  content.className = 'featured-case-study-content';
+
+  const typeBadge = document.createElement('span');
+  typeBadge.className = 'project-type-badge';
+  typeBadge.textContent = getProjectTypeLabel(featuredProject);
+
+  const heading = document.createElement('h3');
+  heading.textContent = featuredProject.title || '';
+
+  const intro = document.createElement('p');
+  intro.textContent = featuredProject.description || '';
+
+  const sections = [
+    { title: 'Challenge', value: featuredProject.challenge },
+    { title: 'Solution', value: featuredProject.solution },
+    { title: 'Technology', value: getProjectTechLabel(featuredProject) }
+  ];
+
+  content.appendChild(typeBadge);
+  content.appendChild(heading);
+  content.appendChild(intro);
+
+  sections.forEach((section) => {
+    if (!section.value) return;
+    const block = document.createElement('div');
+    block.className = 'case-study-detail';
+    const label = document.createElement('h4');
+    label.textContent = section.title;
+    const text = document.createElement('p');
+    text.textContent = section.value;
+    block.appendChild(label);
+    block.appendChild(text);
+    content.appendChild(block);
+  });
+
+  if (Array.isArray(featuredProject.keyFeatures) && featuredProject.keyFeatures.length) {
+    const block = document.createElement('div');
+    block.className = 'case-study-detail';
+    const label = document.createElement('h4');
+    label.textContent = 'Key Features';
+    const listEl = document.createElement('ul');
+    listEl.className = 'case-study-feature-list';
+
+    featuredProject.keyFeatures.forEach((feature) => {
+      const item = document.createElement('li');
+      item.textContent = feature;
+      listEl.appendChild(item);
+    });
+
+    block.appendChild(label);
+    block.appendChild(listEl);
+    content.appendChild(block);
+  }
+
+  content.appendChild(createProjectLinks(featuredProject, 'featured'));
+
+  if (featuredProject.availabilityNote) {
+    const note = document.createElement('p');
+    note.className = 'project-link-note';
+    note.textContent = featuredProject.availabilityNote;
+    content.appendChild(note);
+  }
+
+  card.appendChild(visual);
+  card.appendChild(content);
+  featuredProjectSpotlight.appendChild(card);
+};
+
+const renderSelectedWorkCards = (projects) => {
+  if (!selectedWorkGrid) return;
+  selectedWorkGrid.innerHTML = '';
+  const list = Array.isArray(projects) ? projects.slice(0, 3) : [];
+  list.forEach((project) => {
+    selectedWorkGrid.appendChild(createStandardProjectCard(project));
+  });
 };
 
 const renderProjectCards = (projects) => {
@@ -735,55 +911,7 @@ const renderProjectCards = (projects) => {
   projectsGrid.innerHTML = '';
   const list = Array.isArray(projects) ? projects : (projects && projects.projects) ? projects.projects : [];
   list.forEach((project) => {
-    const article = document.createElement('article');
-    article.className = 'project-card';
-
-    const imageWrap = document.createElement('div');
-    imageWrap.className = 'project-image';
-    if (project.imageUrl) imageWrap.style.backgroundImage = `url('${project.imageUrl}')`;
-    const imageLabel = document.createElement('span');
-    imageLabel.className = 'project-image-label';
-    imageLabel.textContent = project.imageLabel || project.category || 'Project';
-    imageWrap.appendChild(imageLabel);
-
-    const content = document.createElement('div');
-    content.className = 'project-content';
-    const h2 = document.createElement('h2');
-    h2.textContent = project.title || '';
-    const p = document.createElement('p');
-    p.textContent = project.description || '';
-
-    const status = document.createElement('p');
-    status.className = 'project-meta';
-    if (project.status || project.tech) status.textContent = `${project.status || ''}${project.status && project.tech ? ' | ' : ''}${project.tech || ''}`;
-
-    const links = document.createElement('div');
-    links.className = 'project-links';
-    if (project.sourceUrl) {
-      const a = document.createElement('a');
-      a.className = 'btn btn-secondary';
-      a.href = project.sourceUrl;
-      if (!project.sourceUrl.startsWith('mailto:')) { a.target = '_blank'; a.rel = 'noreferrer'; }
-      a.textContent = project.sourceLabel || 'Source';
-      links.appendChild(a);
-    }
-    if (project.demoUrl) {
-      const a = document.createElement('a');
-      a.className = 'btn btn-link';
-      a.href = project.demoUrl;
-      if (!project.demoUrl.startsWith('mailto:')) { a.target = '_blank'; a.rel = 'noreferrer'; }
-      a.textContent = project.demoLabel || 'Demo';
-      links.appendChild(a);
-    }
-
-    content.appendChild(h2);
-    content.appendChild(p);
-    if (status.textContent) content.appendChild(status);
-    content.appendChild(links);
-
-    article.appendChild(imageWrap);
-    article.appendChild(content);
-    projectsGrid.appendChild(article);
+    projectsGrid.appendChild(createStandardProjectCard(project));
   });
   const projectMessage = document.querySelector('.no-results-message');
   if (projectMessage) {
@@ -900,11 +1028,13 @@ if (newsGrid) {
   }
 }
 
-if (projectsGrid) {
+if (projectsGrid || selectedWorkGrid || featuredProjectSpotlight) {
   loadProjects()
     .then((data) => {
       const projects = Array.isArray(data) ? data : (data && data.projects) ? data.projects : [];
       if (Array.isArray(projects)) {
+        renderFeaturedProject(projects);
+        renderSelectedWorkCards(projects);
         renderProjectCards(projects);
       }
     })
@@ -918,10 +1048,27 @@ if (projectsGrid) {
         projectMessage.textContent = 'Unable to load projects right now.';
         projectMessage.style.display = 'block';
       }
+      if (selectedWorkGrid) {
+        selectedWorkGrid.innerHTML = '';
+      }
+      if (featuredProjectSpotlight) {
+        featuredProjectSpotlight.textContent = 'Unable to load the featured project right now.';
+      }
     });
   if (useSupabase) {
-    const chan = setupRealtimeFor(supabaseProjectsTable, () => loadProjects().then((d) => renderProjectCards(Array.isArray(d) ? d : (d && d.projects) ? d.projects : [])));
-    if (!chan) startPolling('projects', async () => renderProjectCards(await loadProjects()));
+    const chan = setupRealtimeFor(supabaseProjectsTable, () => loadProjects().then((d) => {
+      const projects = Array.isArray(d) ? d : (d && d.projects) ? d.projects : [];
+      renderFeaturedProject(projects);
+      renderSelectedWorkCards(projects);
+      renderProjectCards(projects);
+    }));
+    if (!chan) startPolling('projects', async () => {
+      const projects = await loadProjects();
+      const list = Array.isArray(projects) ? projects : (projects && projects.projects) ? projects.projects : [];
+      renderFeaturedProject(list);
+      renderSelectedWorkCards(list);
+      renderProjectCards(list);
+    });
   }
 }
 
